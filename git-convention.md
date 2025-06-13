@@ -1,4 +1,4 @@
-# 🧭 Git 컨벤션 가이드 - Eiii-b
+# Git 컨벤션 가이드 - Eiii-b
 
 팀 협업을 위한 Git 사용 규칙입니다. 통일된 방식으로 깔끔하고 협업하기 쉬운 Git 히스토리를 만들어갑시다!
 
@@ -17,7 +17,7 @@
 | `test/*` | 테스트 코드 |
 | `chore/*` | 설정, 기타 작업 |
 
-### ✅ 브랜치 네이밍 예시
+### 브랜치 네이밍 예시
 feat/login<br>
 fix/signup-validation<br>
 refactor/matching-service<br>
@@ -35,7 +35,7 @@ refactor/matching-service<br>
 | `test` | 테스트 코드 추가/수정 |
 | `chore` | 기타 설정, 빌드 파일 수정 등 |
 
-### ✅ 커밋 예시
+###  커밋 예시
 feat: 회원가입 API 구현<br>
 fix: 로그인 시 비밀번호 검증 오류 수정<br>
 refactor: UserService 리팩토링<br>
@@ -48,7 +48,7 @@ refactor: UserService 리팩토링<br>
 - 기능/버그 별 작은 단위로 PR 분리
 - 팀원 리뷰 요청 → 승인 후 머지
 
-### ✅ PR 제목 예시
+###  PR 제목 예시
 [feat] 회원가입 API 구현<br>
 [fix] 로그인 validation 오류 해결<br>
 
@@ -61,7 +61,7 @@ refactor: UserService 리팩토링<br>
 - 작업 후 PR에 `Close #이슈번호` 연결
 - 템플릿 활용 권장
 
-### ✅ 추천 라벨
+### 기본본 라벨
 | 라벨 | 용도 |
 |------|------|
 | `feature` | 신규 기능 |
@@ -75,7 +75,7 @@ refactor: UserService 리팩토링<br>
 
 ---
 
-## ✅ 마무리 체크리스트
+## 마무리 체크리스트
 
 - [ ] 기능 작업 전 이슈 등록
 - [ ] 브랜치 규칙 준수
@@ -85,4 +85,4 @@ refactor: UserService 리팩토링<br>
 
 ---
 
-🙌 컨벤션을 지켜서 더 빠르고, 더 멋진 협업을 해봐요!
+컨벤션을 지켜서 더 빠르고, 더 멋진 협업을 해봐요!
