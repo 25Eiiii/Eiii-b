@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import SignUpView, ProfileCreateView
+from .views import SignUpView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
