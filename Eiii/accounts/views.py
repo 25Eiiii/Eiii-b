@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Profile
 from .serializers import ProfileSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 class SignUpView(APIView):
     def post(self, request):
@@ -22,3 +24,15 @@ class ProfileCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "로그아웃 되었습니다."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": "유효하지 않은 refresh 토큰입니다."}, status=status.HTTP_400_BAD_REQUEST)
