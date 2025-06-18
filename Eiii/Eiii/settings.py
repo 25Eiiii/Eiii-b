@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'accounts',
+    'rest_framework_simplejwt.token_blacklist', #로그아웃시 refresh토큰을 서버에서 폐기
 ]
 
 MIDDLEWARE = [
