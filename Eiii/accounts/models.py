@@ -20,6 +20,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=20, unique=True)
+    nickname = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
     is_active = models.BooleanField(default=True)
