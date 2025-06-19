@@ -3,6 +3,7 @@ from .models import CustomUser
 import re
 from .models import Profile
 
+#회원가입
 class SignUpSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
 
@@ -34,8 +35,34 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+#프로필   
 class ProfileSerializer(serializers.ModelSerializer):
+    preferred_menu = serializers.ListField(child=serializers.CharField())
+    dietary_restrictions = serializers.ListField(child=serializers.CharField())
+    
     class Meta:
         model = Profile
         fields = '__all__'
         read_only_fields = ['user']    
+
+#매칭 프로필 미리보기용
+class ProfilePreviewSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Profile
+        fields = [
+            'id',
+            'nickname',
+            'username',
+            'dining_style',
+            'meal_purpose',
+            'eating_speed',
+            'dessert',  # 미리보기 정보 4개는 나중에 수정 가능
+        ]
+
+    def get_nickname(self, obj):
+        return obj.user.nickname  
+    def get_username(self, obj):
+        return obj.user.username
