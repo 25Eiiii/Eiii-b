@@ -1,31 +1,40 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings #프로파일 모델용
 # Create your models here.
 
+#관리자 계정
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, password, email, phone):
+    def create_user(self, username, password=None, email=None, phone=None, nickname=None, **extra_fields):
         if not username:
-            raise ValueError("아이디는 필수입니다.")
-        user = self.model(username=username, email=email, phone=phone)
+            raise ValueError('Users must have a username')
+
+        user = self.model(
+            username=username,
+            email=email or '',
+            phone=phone or '',
+            nickname=nickname or '',
+            **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, password, email, phone):
-        user = self.create_user(username, password, email, phone)
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
+    def create_superuser(self, username, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-class CustomUser(AbstractBaseUser):
+        return self.create_user(username=username, password=password, **extra_fields)
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=20, unique=True)
     nickname = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
-    nickname = models.CharField(max_length=30, blank=True)
+    
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -34,10 +43,6 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-
-    @property
-    def is_staff(self):
-        return self.is_admin
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
