@@ -9,7 +9,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'password', 'password2', 'email', 'phone']
+        fields = ['username', 'nickname', 'password', 'password2', 'email', 'phone']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, value):
@@ -26,12 +26,9 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
-        user = CustomUser(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            phone=validated_data['phone'],
-        )
-        user.set_password(validated_data['password'])
+        password = validated_data.pop('password')
+        user = CustomUser(**validated_data)
+        user.set_password(password)
         user.save()
         return user
     
