@@ -8,6 +8,7 @@ from .models import Profile
 from .serializers import ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import ProfilePreviewSerializer
+from rest_framework.generics import RetrieveAPIView
 
 
 class SignUpView(APIView):
@@ -81,3 +82,8 @@ class MatchView(APIView):
         top_matches = sorted_profiles[:6]
         serializer = ProfilePreviewSerializer(top_matches, many=True)
         return Response(serializer.data)
+
+class ProfileDetailView(RetrieveAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]

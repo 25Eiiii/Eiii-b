@@ -35,15 +35,23 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-#프로필   
+#매칭 프로필 상세보기용
 class ProfileSerializer(serializers.ModelSerializer):
     preferred_menu = serializers.ListField(child=serializers.CharField())
     dietary_restrictions = serializers.ListField(child=serializers.CharField())
-    
+    username = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = '__all__'
+        #exclude = ['user'] 해당 프로필을 소유한 사용자 ID 숨기려면 
         read_only_fields = ['user']    
+    
+    def get_nickname(self, obj):
+        return getattr(obj.user, 'nickname', None)
+    def get_username(self, obj):
+        return obj.user.username
 
 #매칭 프로필 미리보기용
 class ProfilePreviewSerializer(serializers.ModelSerializer):
@@ -63,6 +71,6 @@ class ProfilePreviewSerializer(serializers.ModelSerializer):
         ]
 
     def get_nickname(self, obj):
-        return obj.user.nickname  
+        return getattr(obj.user, 'nickname', None)
     def get_username(self, obj):
         return obj.user.username
