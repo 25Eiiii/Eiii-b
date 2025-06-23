@@ -38,7 +38,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     dietary_restrictions = serializers.ListField(child=serializers.CharField())
     username = serializers.CharField(source='user.username', required=False)
     nickname = serializers.CharField(source='user.nickname', required=False)
-
+    
+    #쪽지 receiver용
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    
     class Meta:
         model = Profile
         fields = [
@@ -53,7 +56,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'meal_purpose',
             'dessert',
             'preferred_menu',
-            'dietary_restrictions'
+            'dietary_restrictions',
+            'user_id',
         ]
         read_only_fields = ['id']  # user는 perform_create나 get_object에서 처리함
 
