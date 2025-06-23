@@ -32,25 +32,49 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-#매칭 프로필 상세보기용
+#프로필 상세보기용
 class ProfileSerializer(serializers.ModelSerializer):
     preferred_menu = serializers.ListField(child=serializers.CharField())
     dietary_restrictions = serializers.ListField(child=serializers.CharField())
-    username = serializers.SerializerMethodField()
-    nickname = serializers.SerializerMethodField()
+    username = serializers.CharField(source='user.username', required=False)
+    nickname = serializers.CharField(source='user.nickname', required=False)
 
     class Meta:
         model = Profile
-        fields = '__all__'
-        #exclude = ['user'] 해당 프로필을 소유한 사용자 ID 숨기려면 
-        read_only_fields = ['user']    
-    
-    def get_nickname(self, obj):
-        return getattr(obj.user, 'nickname', None)
-    def get_username(self, obj):
-        return obj.user.username
+        fields = [
+            'id',
+            'username',
+            'nickname',
+            'major',
+            'year',
+            'preferred_gender',
+            'dining_style',
+            'eating_speed',
+            'meal_purpose',
+            'dessert',
+            'preferred_menu',
+            'dietary_restrictions'
+        ]
+        read_only_fields = ['id']  # user는 perform_create나 get_object에서 처리함
 
-#매칭 프로필 미리보기용
+    def update(self, instance, validated_data):
+        # user 관련 정보 분리
+        user_data = validated_data.pop('user', {})
+
+        # 프로필 정보 수정
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # 유저 정보 수정
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        return instance
+
+#프로필 미리보기용
 class ProfilePreviewSerializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()

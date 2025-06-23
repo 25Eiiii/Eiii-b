@@ -5,10 +5,10 @@ from .serializers import SignUpSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, ProfilePreviewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import ProfilePreviewSerializer
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, RetrieveUpdateAPIView
 
 
 class SignUpView(APIView):
@@ -26,6 +26,25 @@ class ProfileCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class MyProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)
+    
+class MyProfilePreviewView(RetrieveAPIView):
+    serializer_class = ProfilePreviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)
+
+class ProfilePreviewView(RetrieveAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfilePreviewSerializer
+    permission_classes = [IsAuthenticated]
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
