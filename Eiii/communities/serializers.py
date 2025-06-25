@@ -23,11 +23,19 @@ class PostSerializer(serializers.ModelSerializer):
     
 class CommentSerializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
+    major = serializers.SerializerMethodField()
+    year = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'nickname', 'content', 'created_at']
+        fields = ['id', 'user', 'nickname', 'major', 'year', 'title', 'content', 'created_at']
+        read_only_fields = ['user']  
+
+    def get_major(self, obj):
+        return getattr(obj.user.profile, 'major', None)
+
+    def get_year(self, obj):
+        return getattr(obj.user.profile, 'year', None)
 
     def get_nickname(self, obj):
         return getattr(obj.user, 'nickname', None)
-

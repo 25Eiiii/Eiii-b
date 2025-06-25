@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Post
-from .serializers import PostSerializer
+from .models import Post, Comment
+from .serializers import PostSerializer, CommentSerializer
 from rest_framework import status
 
 class CommunityListView(APIView):
@@ -30,3 +31,15 @@ class CommunityListView(APIView):
         posts = Post.objects.filter(category=category).order_by('-created_at')
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+    
+class CommentView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Comment.objects.filter(post__id=post_id).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        post = Post.objects.get(pk=self.kwargs['post_id'])
+        serializer.save(user=self.request.user, post=post)
