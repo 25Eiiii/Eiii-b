@@ -15,6 +15,8 @@ class Post(models.Model):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     title = models.CharField(max_length=200)
     content = models.TextField()
+    photo = models.ImageField(verbose_name="사진",
+                              blank=True, null=True, upload_to='post_photo')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -24,7 +26,6 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

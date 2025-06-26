@@ -9,7 +9,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'nickname', 'major', 'year', 'category', 'title', 'content', 'created_at']
+        fields = ['id', 'user', 'nickname', 'major', 'year', 'category', 'title', 'content', 'photo', 'created_at']
         read_only_fields = ['user']  
 
     def get_major(self, obj):
@@ -29,8 +29,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'nickname', 'major', 'year', 'title', 'content', 'created_at', 'parent', 'replies']
-        read_only_fields = ['user', 'replies']
+        fields = ['id', 'post', 'user', 'nickname', 'major', 'year', 'content', 'created_at', 'parent', 'replies']
+        read_only_fields = ['user', 'replies', 'post']
 
     def get_major(self, obj):
         return getattr(obj.user.profile, 'major', None)
