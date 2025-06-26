@@ -28,5 +28,14 @@ class Comment(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    #답댓글 기능을 위한 부모 댓글 ID 생성
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='replies'
+    )
+
     def __str__(self):
         return f"{self.user.nickname} - {self.content[:20]}"

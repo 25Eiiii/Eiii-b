@@ -25,11 +25,12 @@ class CommentSerializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
     major = serializers.SerializerMethodField()
     year = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'nickname', 'major', 'year', 'title', 'content', 'created_at']
-        read_only_fields = ['user']  
+        fields = ['id', 'user', 'nickname', 'major', 'year', 'title', 'content', 'created_at', 'parent', 'replies']
+        read_only_fields = ['user', 'replies']
 
     def get_major(self, obj):
         return getattr(obj.user.profile, 'major', None)
@@ -39,3 +40,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_nickname(self, obj):
         return getattr(obj.user, 'nickname', None)
+    
+    def get_replies(self, obj):
+        replies = obj.replies.all().order_by('created_at')
+        return CommentSerializer(replies, many=True).data
+
+    def validate_parent(self, value):
+        if value and value.parent is not None:
+            raise serializers.ValidationError("답댓글의 답댓글은 작성할 수 없습니다.")
+        return value
