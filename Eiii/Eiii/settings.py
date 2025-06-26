@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'accounts',
+    'home',
+    'communities',
     'rest_framework_simplejwt.token_blacklist', #로그아웃시 refresh토큰을 서버에서 폐기
     'dmessages',
 ]
