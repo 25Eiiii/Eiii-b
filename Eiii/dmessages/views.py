@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import Message
 from .serializers import MessageSerializer, MessageRequestPreviewSerializer
 from django.contrib.auth import get_user_model
-
+from django.db.models import Q
 # Create your views here.
 
 User = get_user_model()
@@ -49,3 +49,16 @@ class RespondToRequestView(generics.UpdateAPIView):
         message.is_accepted = decision
         message.save()
         return Response(MessageSerializer(message).data)
+
+#쪽지 보관함(쪽지 요청 수락된 쪽지 목록)
+class AcceptedMessagesView(generics.ListAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Message.objects.filter(
+            is_request=True,
+            is_accepted=True
+        ).filter(
+            Q(sender=self.request.user) | Q(receiver=self.request.user)
+        ).order_by('-timestamp')
