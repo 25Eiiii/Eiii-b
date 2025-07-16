@@ -51,6 +51,24 @@ class LikeView(APIView):
             return Response({'message': '좋아요가 취소되었습니다.'}, status=status.HTTP_200_OK)
         return Response({'message': '좋아요가 추가되었습니다.'}, status=status.HTTP_201_CREATED)
 
+class LikedPostsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        print(request.user.id)
+
+        liked_posts = Post.objects.filter(likes__user=request.user).order_by('-created_at')
+        serializer = PostSerializer(liked_posts, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class ScrappedPostsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        scrapped_posts = Post.objects.filter(scraps__user=request.user).order_by('-created_at')
+        serializer = PostSerializer(scrapped_posts, many=True, context={'request': request})
+        return Response(serializer.data)
 
 class ScrapView(APIView):
     permission_classes = [IsAuthenticated]
