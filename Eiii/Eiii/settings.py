@@ -80,19 +80,30 @@ WSGI_APPLICATION = 'Eiii.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv("DB_NAME"), 
+#         'USER': os.getenv("DB_USER"), 
+#         'PASSWORD': os.getenv("DB_PASSWORD"),
+#         'HOST': os.getenv("DB_HOST"),
+#         'PORT': os.getenv("DB_PORT"),
+#     }
+# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DB_NAME"), 
-        'USER': os.getenv("DB_USER"), 
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
+        'NAME': 'postgres',  
+        'USER': 'postgres',  
+        'PASSWORD': 'wishkk1589555',
+        'HOST': 'db.fkagvsxfqxlnqiwgocfv.supabase.co',
+        'PORT': '5432',
     }
 }
 
