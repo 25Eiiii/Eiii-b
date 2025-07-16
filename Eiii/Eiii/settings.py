@@ -98,18 +98,10 @@ WSGI_APPLICATION = 'Eiii.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'VyPEDJq4itLZUQ4e',
-        'HOST': 'db.fkagvsxfqxlnqiwgocfv.supabase.co',
-        'PORT': '5432',
-        'OPTIONS': {
-            'client_encoding': 'utf8',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 
 # Password validation
