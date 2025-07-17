@@ -12,4 +12,5 @@ urlpatterns = [
     path('post/scrapped/', views.ScrappedPostsView.as_view(), name='scrapped-posts'),
     path('<int:post_id>/comments/', views.CommentView.as_view(), name='comment-list-create'),
     path('<int:post_id>/comments/<int:pk>/', views.CommentDetailView.as_view(), name='comment-detail'),
+    path('comments/my/', views.MyCommentListView.as_view(), name='my_comments'),
 ]
