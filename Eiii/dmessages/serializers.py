@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Message
+from .models import Message, ChatRoom
 from accounts.models import CustomUser  # 사용자모델
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -20,7 +20,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'is_request',#대화 신청 메시지 여부 (True면 대화 요청 메시지)
             'is_accepted',#수락(True), 거절(False), 아직 응답 없음(None)
         ]
-        read_only_fields = ['id', 'sender', 'sender_nickname', 'timestamp']
+        read_only_fields = ['id', 'sender', 'sender_nickname', 'receiver', 'receiver_nickname','timestamp']
 
     def get_sender_nickname(self, obj):
         return obj.sender.nickname
@@ -48,3 +48,17 @@ class MessageRequestPreviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'sender_nickname', 'sender_major', 'sender_year', 'timestamp']
+
+
+
+class ChatRoomSerializer(serializers.ModelSerializer):
+    other_participant_nickname = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ChatRoom
+        fields = ['id', 'created_at', 'other_participant_nickname']
+
+    def get_other_participant_nickname(self, obj):
+        user = self.context['request'].user
+        other = obj.participants.exclude(id=user.id).first()
+        return other.nickname if other else None

@@ -1,10 +1,14 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Message
-from .serializers import MessageSerializer, MessageRequestPreviewSerializer
+from .models import Message, ChatRoom
+from .serializers import (
+    MessageSerializer, MessageRequestPreviewSerializer,
+    ChatRoomSerializer)
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
+
 # Create your views here.
 
 User = get_user_model()
@@ -47,6 +51,13 @@ class RespondToRequestView(generics.UpdateAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         message.is_accepted = decision
+
+        # 수락 시 채팅방 생성 + 연결
+        if decision is True:
+            chatroom = ChatRoom.objects.create()
+            chatroom.participants.set([message.sender, message.receiver])
+            message.chatroom = chatroom
+
         message.save()
         return Response(MessageSerializer(message).data)
 
@@ -62,3 +73,59 @@ class AcceptedMessagesView(generics.ListAPIView):
         ).filter(
             Q(sender=self.request.user) | Q(receiver=self.request.user)
         ).order_by('-timestamp')
+    
+
+#채팅방 목록 조회
+class ChatRoomListView(generics.ListAPIView):
+    serializer_class = ChatRoomSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ChatRoom.objects.filter(participants=self.request.user).order_by('-created_at')
+
+
+class ChatRoomMessageListView(generics.ListAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        chatroom_id = self.kwargs['chatroom_id']
+        return Message.objects.filter(
+            chatroom_id=chatroom_id,
+            is_request=False,  
+        ).order_by('timestamp')
+
+class SendMessageView(generics.CreateAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        chatroom_id = self.kwargs['chatroom_id']
+        chatroom = ChatRoom.objects.get(id=chatroom_id)
+
+        # 유저가 대화 참여자인지 확인
+        if not chatroom.participants.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("이 채팅방에 접근 권한이 없습니다.")
+
+        receiver = chatroom.participants.exclude(id=self.request.user.id).first()
+        serializer.save(sender=self.request.user, receiver=receiver, chatroom=chatroom, is_request=False)
+
+
+class ReadMessageView(generics.UpdateAPIView):
+    queryset = Message.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MessageSerializer  
+
+    def patch(self, request, *args, **kwargs):
+        message = self.get_object()
+
+        # 본인이 받은 메시지만 읽음 처리 가능
+        if message.receiver != request.user:
+            return Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
+        if message.is_read:
+            return Response({"detail": "이미 읽은 메시지입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        message.is_read = True
+        message.save()
+        return Response(self.get_serializer(message).data)
