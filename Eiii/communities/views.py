@@ -116,7 +116,7 @@ class MyCommentListView(generics.ListAPIView):
         # 내가 쓴 댓글들의 post_id 추출
         user_comments = Comment.objects.filter(user=request.user).values_list('post_id', flat=True)
 
-        # 중복 제거된 post만 조회
+        # 중복 제거된 post만 조회  
         posts = Post.objects.filter(id__in=set(user_comments)).order_by('-created_at')
 
         serializer = PostSerializer(posts, many=True, context={'request': request})
