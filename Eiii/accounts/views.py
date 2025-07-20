@@ -106,5 +106,5 @@ class ProfileDetailView(RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
-    def get_object(self):
-        return Profile.objects.get(user__id=self.kwargs['pk'])
+    # def get_object(self):
+    #     return Profile.objects.get(user__id=self.kwargs['pk'])
