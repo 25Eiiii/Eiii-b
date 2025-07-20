@@ -10,6 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import ProfilePreviewSerializer
 from rest_framework.generics import RetrieveAPIView, RetrieveUpdateAPIView
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class SignUpView(APIView):
     def post(self, request):
@@ -18,6 +20,16 @@ class SignUpView(APIView):
             serializer.save()
             return Response({"message": "회원가입 성공"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user_id'] = self.user.id  
+        return data
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class ProfileCreateView(generics.CreateAPIView):
     queryset = Profile.objects.all()

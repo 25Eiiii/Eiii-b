@@ -8,7 +8,9 @@ from .serializers import (
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
-
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from accounts.models import CustomUser
 # Create your views here.
 
 User = get_user_model()
@@ -18,9 +20,17 @@ class MessageRequestView(generics.CreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # def perform_create(self, serializer):
+    #     serializer.save(sender=self.request.user, is_request=True)
     def perform_create(self, serializer):
-        serializer.save(sender=self.request.user, is_request=True)
+        receiver_id = self.request.data.get("receiver")
+        receiver = get_object_or_404(CustomUser, pk=receiver_id)
 
+        serializer.save(
+            sender=self.request.user,
+            receiver=receiver,
+            is_request=True
+        )
 #내가 받은 쪽지 요청 목록
 class ReceivedRequestListView(generics.ListAPIView):
     serializer_class = MessageRequestPreviewSerializer
@@ -108,7 +118,15 @@ class SendMessageView(generics.CreateAPIView):
             raise PermissionDenied("이 채팅방에 접근 권한이 없습니다.")
 
         receiver = chatroom.participants.exclude(id=self.request.user.id).first()
-        serializer.save(sender=self.request.user, receiver=receiver, chatroom=chatroom, is_request=False)
+        
+        serializer.is_valid(raise_exception=True)
+        serializer.save(
+        sender=self.request.user,
+        receiver=receiver,
+        chatroom=chatroom,
+        content=self.request.data.get("content"),
+        is_request=self.request.data.get("is_request", False)
+    )
 
 
 class ReadMessageView(generics.UpdateAPIView):

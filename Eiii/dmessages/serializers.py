@@ -5,12 +5,14 @@ from accounts.models import CustomUser  # 사용자모델
 class MessageSerializer(serializers.ModelSerializer):
     sender_nickname = serializers.SerializerMethodField()
     receiver_nickname = serializers.SerializerMethodField()
-
+    chatroom_id = serializers.SerializerMethodField()
     class Meta:
         model = Message
         fields = [
             'id',
             'sender',#메시지를 보낸 사용자 (자동 설정)
+            'chatroom_id',
+            'chatroom',
             'sender_nickname',
             'receiver',#메시지를 받을 사용자 (프론트에서 전달받음)
             'receiver_nickname',
@@ -20,13 +22,15 @@ class MessageSerializer(serializers.ModelSerializer):
             'is_request',#대화 신청 메시지 여부 (True면 대화 요청 메시지)
             'is_accepted',#수락(True), 거절(False), 아직 응답 없음(None)
         ]
-        read_only_fields = ['id', 'sender', 'sender_nickname', 'receiver_nickname','timestamp']
+        read_only_fields = ['id', 'sender', 'receiver','sender_nickname', 'receiver_nickname','timestamp', 'chatroom', 'chatroom_id']
 
     def get_sender_nickname(self, obj):
         return obj.sender.nickname
 
     def get_receiver_nickname(self, obj):
         return obj.receiver.nickname
+    def get_chatroom_id(self, obj):
+        return obj.chatroom.id if obj.chatroom else None
     
     def validate(self, data):
         
