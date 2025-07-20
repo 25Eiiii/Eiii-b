@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, ProfileCreateView
+from .views import SignUpView, ProfileCreateView, ProfileByUserIdView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import LogoutView, MatchView, ProfileDetailView, MyProfileView, MyProfilePreviewView, ProfilePreviewView 
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('match/', MatchView.as_view(), name='match'),
     path('profile/<int:pk>/preview/', ProfilePreviewView.as_view(), name='profile-preview'),  # 다른 사람 미리보기
     path('profile/<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),            # 다른 사람 상세
+    path('profile/user/<int:user_id>/', ProfileByUserIdView.as_view(), name='profile-by-user'),
 ]

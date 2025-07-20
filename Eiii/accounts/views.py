@@ -9,7 +9,7 @@ from .serializers import ProfileSerializer, ProfilePreviewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import ProfilePreviewSerializer
 from rest_framework.generics import RetrieveAPIView, RetrieveUpdateAPIView
-
+from django.shortcuts import get_object_or_404
 
 class SignUpView(APIView):
     def post(self, request):
@@ -106,5 +106,10 @@ class ProfileDetailView(RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
-    # def get_object(self):
-    #     return Profile.objects.get(user__id=self.kwargs['pk'])
+    
+class ProfileByUserIdView(RetrieveAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return get_object_or_404(Profile, user__id=self.kwargs['user_id'])
