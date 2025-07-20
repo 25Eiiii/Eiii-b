@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import CustomUser
 import re
 from .models import Profile
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 #회원가입
 class SignUpSerializer(serializers.ModelSerializer):
@@ -31,6 +33,14 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        data['user_id'] = self.user.id
+        data['nickname'] = self.user.nickname  
+        return data
     
 #프로필 상세보기용
 class ProfileSerializer(serializers.ModelSerializer):

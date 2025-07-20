@@ -65,6 +65,7 @@ class RespondToRequestView(generics.UpdateAPIView):
 class AcceptedMessagesView(generics.ListAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
 
     def get_queryset(self):
         return Message.objects.filter(
@@ -110,7 +111,15 @@ class SendMessageView(generics.CreateAPIView):
         receiver = chatroom.participants.exclude(id=self.request.user.id).first()
         serializer.save(sender=self.request.user, receiver=receiver, chatroom=chatroom, is_request=False)
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
+        if not serializer.is_valid():
+            print("❌ serializer.errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # 유효하면 원래의 post 로직대로 진행 → perform_create() 호출됨
+        return super().post(request, *args, **kwargs)
 class ReadMessageView(generics.UpdateAPIView):
     queryset = Message.objects.all()
     permission_classes = [permissions.IsAuthenticated]

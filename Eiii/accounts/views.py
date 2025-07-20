@@ -9,7 +9,8 @@ from .serializers import ProfileSerializer, ProfilePreviewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import ProfilePreviewSerializer
 from rest_framework.generics import RetrieveAPIView, RetrieveUpdateAPIView
-
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 class SignUpView(APIView):
     def post(self, request):
@@ -45,6 +46,9 @@ class ProfilePreviewView(RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfilePreviewSerializer
     permission_classes = [IsAuthenticated]
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -103,6 +107,13 @@ class MatchView(APIView):
         return Response(serializer.data)
 
 class ProfileDetailView(RetrieveAPIView):
-    queryset = Profile.objects.all()
+    #queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Profile.objects.select_related("user").all()
+
+    def get_object(self):
+        user_id = self.kwargs['pk']
+        return Profile.objects.get(user__id=user_id)
