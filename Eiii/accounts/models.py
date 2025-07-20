@@ -57,5 +57,8 @@ class Profile(models.Model):
     preferred_menu = models.JSONField()  #선호메뉴(다중 선택으로)
     dietary_restrictions = models.JSONField()  #특이사항(다중 선택으로)
 
+
+    preferred_menu = models.JSONField(default=list)
+    dietary_restrictions = models.JSONField(default=list)
     def __str__(self):
         return f"{self.user.username}'s profile"
