@@ -20,7 +20,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'is_request',#대화 신청 메시지 여부 (True면 대화 요청 메시지)
             'is_accepted',#수락(True), 거절(False), 아직 응답 없음(None)
         ]
-        read_only_fields = ['id', 'sender', 'sender_nickname', 'receiver', 'receiver_nickname','timestamp']
+        read_only_fields = ['id', 'sender', 'sender_nickname', 'receiver_nickname','timestamp']
 
     def get_sender_nickname(self, obj):
         return obj.sender.nickname
@@ -41,13 +41,14 @@ class MessageSerializer(serializers.ModelSerializer):
     
 #쪽지 요청함에 들어갈 리스트 정보들
 class MessageRequestPreviewSerializer(serializers.ModelSerializer):
+    sender = serializers.IntegerField(source='sender.id') 
     sender_nickname = serializers.CharField(source='sender.nickname')
     sender_major = serializers.CharField(source='sender.profile.major')
     sender_year = serializers.CharField(source='sender.profile.year')
 
     class Meta:
         model = Message
-        fields = ['id', 'sender_nickname', 'sender_major', 'sender_year', 'timestamp']
+        fields = ['id', 'sender','sender_nickname', 'sender_major', 'sender_year', 'timestamp']
 
 
 
