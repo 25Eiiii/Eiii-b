@@ -58,9 +58,6 @@
 
 ## 기술 스택
 
-### 프론트엔드
-
-
 ### 백엔드
 - Django REST Framework
 - Django ORM / JSONField
